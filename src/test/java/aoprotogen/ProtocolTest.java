@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.Recognizer;
 import org.junit.jupiter.api.Test;
 
 import aoprotogen.ProtocolParser.CommandContext;
+import aoprotogen.ProtocolParser.CommentContext;
 import aoprotogen.ProtocolParser.ParamContext;
 import aoprotogen.ProtocolParser.SizeContext;
 import aoprotogen.ProtocolParser.TupleContext;
@@ -41,21 +42,9 @@ public class ProtocolTest {
 		AtomicReference<String> type = new AtomicReference<>();
 		AtomicReference<String> size = new AtomicReference<>();
 		AtomicReference<String> tuple = new AtomicReference<>();
+		AtomicReference<Boolean> write = new AtomicReference<>(false);
 		
 		p.addParseListener(new ProtocolBaseListener() {
-			@Override
-			public void enterCommand(CommandContext ctx) {
-				super.enterCommand(ctx);
-				params.get().clear();
-			}
-			@Override
-			public void enterParam(ParamContext ctx) {
-				super.enterParam(ctx);
-			}
-			@Override
-			public void enterTuple(TupleContext ctx) {
-				super.enterTuple(ctx);
-			}
 			@Override
 			public void enterType(TypeContext ctx) {
 				super.enterType(ctx);
@@ -64,6 +53,11 @@ public class ProtocolTest {
 			public void exitType(TypeContext ctx) {
 				super.exitType(ctx);
 				type.set(types(ctx.getChild(0).toString()));
+			}
+			
+			@Override
+			public void enterTuple(TupleContext ctx) {
+				super.enterTuple(ctx);
 			}
 			@Override
 			public void exitTuple(TupleContext ctx) {
@@ -79,6 +73,7 @@ public class ProtocolTest {
 				
 				tuple.set(s);
 			}
+			
 			@Override
 			public void enterSize(SizeContext ctx) {
 				super.enterSize(ctx);
@@ -89,6 +84,11 @@ public class ProtocolTest {
 				super.exitSize(ctx);
 				String tam = ".".equals(ctx.getText()) ? "" : ctx.getText();
 				size.set("[" + tam + "]");
+			}
+			
+			@Override
+			public void enterParam(ParamContext ctx) {
+				super.enterParam(ctx);
 			}
 			@Override
 			public void exitParam(ParamContext ctx) {
@@ -106,6 +106,12 @@ public class ProtocolTest {
 				
 				params.get().add(t + array + " " + param);
 			}
+			
+			@Override
+			public void enterCommand(CommandContext ctx) {
+				super.enterCommand(ctx);
+				params.get().clear();
+			}
 			@Override
 			public void exitCommand(CommandContext ctx) {
 				super.exitCommand(ctx);
@@ -119,10 +125,23 @@ public class ProtocolTest {
 					sep = ", ";
 				}
 				
-				System.out.format("void handle%s(%s);\n", functionName, sb.toString());
+				if (write.get())
+					System.out.format("void write%s(%s);\n", functionName, sb.toString());
+				else
+					System.out.format("void handle%s(%s);\n", functionName, sb.toString());
 				params.get().clear();
 				size.set("");
 			}
+			
+			@Override
+			public void exitComment(CommentContext ctx) {
+				super.exitComment(ctx);
+				if (ctx.getText().contains("-------")) {
+					// change mode
+					write.set(true);
+				}
+			}
+			
 		});		
 		
 		p.parse();
