@@ -1,0 +1,10 @@
+### comentarios
+# otro comentario
+comando,i:entero,s:cadena
+rambo,i[55]:entero,s[TAM]:cadena
+OtroComando
+#comentario
+otroCmd,i:value
+superman,s:entero,s[.]:opciones
+can,s:texto,(i:aaaa,s:bbb)[.]:complejo
+fin
