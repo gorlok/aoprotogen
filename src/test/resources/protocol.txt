@@ -1,13 +1,6 @@
-# s=string
-# b=byte 1
-# i=int  2
-# l=long 4
-# f=float/single 4
-#
-#
 LoginExistingChar,s:userName,s:password,b:version1,b:version2,b:version3,i:versionGrafs,i:versionWavs,i:versionMidis,i:versionInits,i:versionMapas,i:versionAoExe,i:versionExtras
 ThrowDices
-LoginNewChar,s:userName,s:password,b:version1,b:version2,b:version3,i:versionGrafs,i:versionWavs,i:versionMidis,i:versionInits,i:versionMapas,i:versionAoExe,i:versionExtras,b:race,b:gender,b:class,b[NUMSKILLS]:skills,s:email,b:homeland
+LoginNewChar,s:userName,s:password,b:version1,b:version2,b:version3,i:versionGrafs,i:versionWavs,i:versionMidis,i:versionInits,i:versionMapas,i:versionAoExe,i:versionExtras,b:race,b:gender,b:clazz,b[NUMSKILLS]:skills,s:email,b:homeland
 Talk,s:chat
 Yell,s:chat
 Whisper,i:targetCharIndex,s:chat
@@ -344,7 +337,7 @@ GuildNews,s:guildNews,s:enemiesList,s:alliesList
 OfferDetails,s:details
 AlianceProposalsList,s:guildsList
 PeaceProposalsList,s:guildsList
-CharacterInfo,s:charName,b:race,b:class,b:gender,b:level,l:gold,l:bank,l:reputation,s:previousPetitions,s:currentGuild,s:previousGuilds,b:royalArmy,b:caosLegion,l:citizensKilled,l:criminalsKilled
+CharacterInfo,s:charName,b:race,b:clazz,b:gender,b:level,l:gold,l:bank,l:reputation,s:previousPetitions,s:currentGuild,s:previousGuilds,b:royalArmy,b:caosLegion,l:citizensKilled,l:criminalsKilled
 GuildLeaderInfo,s:guildList,s:memberList,s:guildNews,s:requestsList
 GuildDetails,s:guildName,s:founder,s:foundationDate,s:leader,s:url,i:memberCount,b:electionsOpen,s:alignment,i:enemiesCount,i:alliesCount,s:antifactionPoints,s:codex,s:guildDesc
 ShowGuildFundationForm
@@ -360,4 +353,3 @@ ShowMOTDEditionForm,s:currentMOTD
 ShowGMPanelForm
 UserNameList,s:userNamesList
 Pong
-#------------------------------------------------------------------------------------------------------------

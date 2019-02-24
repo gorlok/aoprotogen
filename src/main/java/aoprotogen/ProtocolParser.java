@@ -116,6 +116,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitParse(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitParse(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ParseContext parse() throws RecognitionException {
@@ -173,6 +178,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitLine(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitLine(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -236,6 +246,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitCommand(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitCommand(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CommandContext command() throws RecognitionException {
@@ -294,6 +309,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitParam(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitParam(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ParamContext param() throws RecognitionException {
@@ -336,6 +356,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitParams(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitParams(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -381,6 +406,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitType(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitType(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -466,6 +496,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitTuple(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitTuple(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TupleContext tuple() throws RecognitionException {
@@ -523,6 +558,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitSize(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitSize(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final SizeContext size() throws RecognitionException {
@@ -573,6 +613,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitParameter(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitParameter(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -628,6 +673,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitComment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitComment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -685,6 +735,11 @@ public class ProtocolParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitAny_except_newline(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitAny_except_newline(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Any_except_newlineContext any_except_newline() throws RecognitionException {
@@ -731,6 +786,11 @@ public class ProtocolParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ProtocolListener ) ((ProtocolListener)listener).exitEol(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ProtocolVisitor ) return ((ProtocolVisitor<? extends T>)visitor).visitEol(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
