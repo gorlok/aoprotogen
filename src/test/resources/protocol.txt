@@ -56,7 +56,7 @@ GuildAllianceDetails,s:guild
 GuildPeaceDetails,s:guild
 GuildRequestJoinerInfo,s:userName
 GuildAlliancePropList
-eGuildPeacePropList
+GuildPeacePropList
 GuildDeclareWar,s:guild
 GuildNewWebsite,s:website
 GuildAcceptNewMember,s:userName
@@ -86,7 +86,7 @@ Enlist
 Information
 Reward
 RequestMOTD
-UpTime
+Uptime
 PartyLeave
 PartyCreate
 PartyJoin
@@ -179,7 +179,7 @@ AcceptRoyalCouncilMember,s:userName
 AcceptChaosCouncilMember,s:userName
 ItemsInTheFloor
 MakeDumb,s:userName
-DumbNoMore,s:userName
+MakeDumbNoMore,s:userName
 DumpIPTables
 CouncilKick,s:userName
 SetTrigger
@@ -187,8 +187,8 @@ AskTrigger
 BannedIPList
 BannedIPReload
 GuildBan,s:guildName
-BanIP,b:1,b:ip1,b:ip2,b:ip3,b:ip4,s:reason
-BanIP,b:0,s:userName,s:reason
+BanIP,b:ip1,b:ip2,b:ip3,b:ip4,s:reason
+BanIPUser,s:userName,s:reason
 UnbanIP,b:ip1,b:ip2,b:ip3,b:ip4
 CreateItem,i:objectIndex
 DestroyItems

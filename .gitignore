@@ -38,4 +38,5 @@ Thumbs.db
 
 # maven
 target/
+out/
 

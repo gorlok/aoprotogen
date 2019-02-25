@@ -1,5 +1,11 @@
 package aoprotogen;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +27,11 @@ public class ProtocolTest {
 	
 	@Test
 	void testName() throws Exception {
+		try {
+			Path file = Paths.get("out/");
+			Files.createDirectory(file);
+		} catch (FileAlreadyExistsException ignore) {}
+		
 		var is = getClass().getResourceAsStream("/protocol.txt");
 		CharStream stream = CharStreams.fromStream(is);
 		
@@ -37,6 +48,8 @@ public class ProtocolTest {
 
 class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	
+	public static final String OUT = "./out/";
+
 	boolean clientMode = false;
 	
 	List<Param> params = new ArrayList<>();
@@ -44,7 +57,7 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	@Override
 	public Protocol visit(ParseTree tree) {
 		System.out.println("// SERVER COMMANDS ---------------");
-		System.out.println("abstract class ServerPacket {};\n");
+		System.out.println("abstract class ClientPacket { public abstract ClientPacketID id(); };\n");
 		var r = super.visit(tree);
 		System.out.println("// FIN");
 		return r;
@@ -55,7 +68,7 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 		if (ctx.getText().contains("-------")) {
 			this.clientMode = true;
 			System.out.println("\n// CLIENT COMMANDS -----------------");
-			System.out.println("abstract class ClientPacket {};\n");			
+			System.out.println("abstract class ServerPacket { public abstract ServerPacketID id(); };\n");			
 			var r = super.visitComment(ctx);
 			return r;
 		}
@@ -66,8 +79,7 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	@Override
 	public Protocol visitCommand(CommandContext ctx) {
 		this.command = ctx.getChild(0).toString();
-		System.out.println("// " + ctx.getText());
-		String baseClazz = (clientMode ? "ClientPacket" : "ServerPacket");
+		String baseClazz = (clientMode ? "ServerPacket" : "ClientPacket");
 		String sufix = (clientMode ? "Response" : "Request");
 		String className = ctx.getChild(0) + sufix;
 		
@@ -79,12 +91,22 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 		
 		var constructor = createConstructor(className, this.params);
 		
-		System.out.format(
-				"class %s extends %s {\n" +
-				"%s"+
-				"%s"+
+		var id = String.format("\t@Override\n\tpublic %sID id() {\n\t\treturn %s;\n\t}\n", baseClazz, baseClazz + "ID." + ctx.getChild(0));
+		
+		var comment = "\t// " + ctx.getText() + "\n";
+		
+		var text = String.format(
+				"package org.ArgentumOnline.server.protocol;\n\n"+
+				"import org.ArgentumOnline.server.net.*;\n\n"+
+				"public class %s extends %s {\n" +
+					"%s"+ // comment
+					"%s"+ // ID
+					"%s"+ // fields
+					"%s"+ // constructor
 				"};\n\n",
-				className, baseClazz, fieldList, constructor);
+				className, baseClazz, comment, id, fieldList, constructor);
+		//System.out.println(text);
+		writeFile(className + ".java", text);
 		
 		return super.visitCommand(ctx);
 	}
@@ -98,10 +120,10 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	
 	private String createConstructor(String className, List<Param> list) {
 		var fieldList = list.stream()
-				.map(p -> p + ";")
+				.map(p -> p + ",")
 				.reduce("", String::concat);
 		
-		if (fieldList.length()>0 && fieldList.charAt(fieldList.length()-1) == ';') {
+		if (fieldList.length()>0 && fieldList.charAt(fieldList.length()-1) == ',') {
 			fieldList = fieldList.substring(0, fieldList.length()-1);
 		}
 
@@ -195,6 +217,15 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 			return "float";
 		}
 		return "";
+	}
+	
+	private static void writeFile(String fileName, String text) {
+		Path file = Paths.get(OUT + fileName);
+		try {
+			Files.writeString(file, text, Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 }
 
