@@ -95,20 +95,70 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 		
 		var comment = "\t// " + ctx.getText() + "\n";
 		
+		var encodeFunc = createEncodeFunc(className, this.params); 
+		
 		var text = String.format(
 				"package org.ArgentumOnline.server.protocol;\n\n"+
-				"import org.ArgentumOnline.server.net.*;\n\n"+
+				"import org.ArgentumOnline.server.net.*;\n"+
+				"import io.netty.buffer.ByteBuf;\n\n"+
 				"public class %s extends %s {\n" +
 					"%s"+ // comment
 					"%s"+ // ID
 					"%s"+ // fields
 					"%s"+ // constructor
+					"%s"+ // encode function
 				"};\n\n",
-				className, baseClazz, comment, id, fieldList, constructor);
+				className, baseClazz, comment, id, fieldList, constructor, encodeFunc);
 		//System.out.println(text);
 		writeFile(className + ".java", text);
 		
 		return super.visitCommand(ctx);
+	}
+
+	private String createEncodeFunc(String className, List<Param> params) {
+		var template =
+		"\tpublic static %s decode(ByteBuf in) {    \n"+
+		"\t	try {                                   \n"+
+		"%s"+
+		"\t		return new %s(%s);                  \n"+
+		"\t	} catch (IndexOutOfBoundsException e) { \n"+
+		"\t		return null;                        \n"+
+		"\t	}                                       \n"+
+		"\t}                                        \n";
+		
+		var reads =
+			params.stream()
+			.map(p -> "\t\t\t" + p.type + " " + p.name + " = " + readFunc(p.type) + "(in);\n" )
+			.reduce("", String::concat);
+		
+		var cons_params =
+				params.stream()
+				.map(p -> p.name + ",")
+				.reduce("", String::concat);
+		if (cons_params.length() > 0) {
+			cons_params = cons_params.substring(0, cons_params.length()-1);
+		}
+
+		return String.format(template, className, reads, className, cons_params);
+	}
+
+	private String readFunc(String type) {
+		switch (type) {
+		case "String":
+			return "readStr";
+		case "byte":
+			return "readByte";
+		case "short":
+			return "readShort";
+		case "int":
+			return "readInt";
+		case "float":
+			return "readFloat";
+		case "byte[]":
+			return "readBytes";
+		default:
+			return "read" + type;
+		}
 	}
 
 	private String createFieldList(List<Param> list) {
