@@ -50,7 +50,7 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	
 	public static final String OUT = "./out/";
 
-	boolean clientMode = false;
+	boolean serverMode = false;
 	
 	List<Param> params = new ArrayList<>();
 	
@@ -66,7 +66,7 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	@Override
 	public Protocol visitComment(CommentContext ctx) {
 		if (ctx.getText().contains("-------")) {
-			this.clientMode = true;
+			this.serverMode = true;
 			System.out.println("\n// CLIENT COMMANDS -----------------");
 			System.out.println("abstract class ServerPacket { public abstract ServerPacketID id(); };\n");			
 			var r = super.visitComment(ctx);
@@ -79,8 +79,8 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 	@Override
 	public Protocol visitCommand(CommandContext ctx) {
 		this.command = ctx.getChild(0).toString();
-		String baseClazz = (clientMode ? "ServerPacket" : "ClientPacket");
-		String sufix = (clientMode ? "Response" : "Request");
+		String baseClazz = (serverMode ? "ServerPacket" : "ClientPacket");
+		String sufix = (serverMode ? "Response" : "Request");
 		String className = ctx.getChild(0) + sufix;
 		
 		params.clear();
@@ -95,7 +95,8 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 		
 		var comment = "\t// " + ctx.getText() + "\n";
 		
-		var encodeFunc = createEncodeFunc(className, this.params); 
+		var decodeFunc = createDecodeFunc(className, this.params);
+		var encodeFunc = serverMode ? createEncodeFunc(className, this.params) : "";
 		
 		var text = String.format(
 				"package org.ArgentumOnline.server.protocol;\n\n"+
@@ -106,25 +107,26 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 					"%s"+ // ID
 					"%s"+ // fields
 					"%s"+ // constructor
+					"%s"+ // decode function
 					"%s"+ // encode function
 				"};\n\n",
-				className, baseClazz, comment, id, fieldList, constructor, encodeFunc);
+				className, baseClazz, comment, id, fieldList, constructor, decodeFunc, encodeFunc);
 		//System.out.println(text);
 		writeFile(className + ".java", text);
 		
 		return super.visitCommand(ctx);
 	}
 
-	private String createEncodeFunc(String className, List<Param> params) {
+	private String createDecodeFunc(String className, List<Param> params) {
 		var template =
-		"\tpublic static %s decode(ByteBuf in) {    \n"+
-		"\t	try {                                   \n"+
-		"%s"+
-		"\t		return new %s(%s);                  \n"+
-		"\t	} catch (IndexOutOfBoundsException e) { \n"+
-		"\t		return null;                        \n"+
-		"\t	}                                       \n"+
-		"\t}                                        \n";
+			"\tpublic static %s decode(ByteBuf in) {    \n"+
+			"\t	try {                                   \n"+
+			"%s"+
+			"\t		return new %s(%s);                  \n"+
+			"\t	} catch (IndexOutOfBoundsException e) { \n"+
+			"\t		return null;                        \n"+
+			"\t	}                                       \n"+
+			"\t}                                        \n";
 		
 		var reads =
 			params.stream()
@@ -142,6 +144,41 @@ class MyProtocolVisitor extends ProtocolBaseVisitor<Protocol> {
 		return String.format(template, className, reads, className, cons_params);
 	}
 
+	private String createEncodeFunc(String className, List<Param> params) {
+		var template =
+			"\t@Override\n"+
+			"\tpublic void encode(ByteBuf out) {\n"+
+			"\t\twriteByte(out,this.id().id());\n"+
+			"%s"+
+			"\t}\n";
+		
+		var writes =
+			params.stream()
+			.map(p -> "\t\t" + writeFunc(p.type) + "(out," + p.name + ");\n" )
+			.reduce("", String::concat);
+		
+		return String.format(template, writes);
+	}
+	
+	private String writeFunc(String type) {
+		switch (type) {
+		case "String":
+			return "writeStr";
+		case "byte":
+			return "writeByte";
+		case "short":
+			return "writeShort";
+		case "int":
+			return "writeInt";
+		case "float":
+			return "writeFloat";
+		case "byte[]":
+			return "writeBytes";
+		default:
+			return "write" + type;
+		}
+	}
+	
 	private String readFunc(String type) {
 		switch (type) {
 		case "String":
