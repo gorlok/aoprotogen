@@ -353,3 +353,4 @@ ShowMOTDEditionForm,s:currentMOTD
 ShowGMPanelForm
 UserNameList,s:userNamesList
 Pong
+UpdateTagAndStatus,i:charIndex,b:criminal,s:tag
