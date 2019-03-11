@@ -125,7 +125,7 @@ ServerTime
 Where,s:userName
 CreaturesInMap,i:map
 WarpMeToTarget
-WarpChar,s:userName,b:x,b:y
+WarpChar,s:userName,i:map,b:x,b:y
 Silence,s:userName
 SOSShowList
 SOSRemove,s:userName
