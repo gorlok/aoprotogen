@@ -76,7 +76,7 @@ PetFollow
 TrainList
 Rest
 Meditate
-Resucitate
+Resuscitate
 Heal
 RequestStats
 Help
