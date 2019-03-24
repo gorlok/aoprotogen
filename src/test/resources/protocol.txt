@@ -187,8 +187,7 @@ AskTrigger
 BannedIPList
 BannedIPReload
 GuildBan,s:guildName
-BanIP,b:ip1,b:ip2,b:ip3,b:ip4,s:reason
-BanIPUser,s:userName,s:reason
+BanIP,b:byIP,b:ip1,b:ip2,b:ip3,b:ip4,s:userName,s:reason
 UnbanIP,b:ip1,b:ip2,b:ip3,b:ip4
 CreateItem,i:objectIndex
 DestroyItems
