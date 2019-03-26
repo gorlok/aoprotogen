@@ -182,7 +182,7 @@ MakeDumb,s:userName
 MakeDumbNoMore,s:userName
 DumpIPTables
 CouncilKick,s:userName
-SetTrigger
+SetTrigger,b:trigger
 AskTrigger
 BannedIPList
 BannedIPReload
